@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/gitminer/issuess")
+@RequestMapping("/gitminer/issues")
 public class IssueController {
 
     @Autowired

@@ -14,17 +14,17 @@ import java.util.List;
 public class ProjectController {
 
     @Autowired
-    ProjectRepository projRepo;
+    ProjectRepository repository;
 
     @GetMapping
     public List<Project> findAll() {
-        return projRepo.findAll();
+        return repository.findAll();
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Project createProject(@RequestBody @Valid Project project) {
-        Project _project = projRepo.save(new Project(
+        Project _project = repository.save(new Project(
                 project.getId(),
                 project.getName(),
                 project.getWebUrl(),

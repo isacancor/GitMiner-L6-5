@@ -1,6 +1,7 @@
 package aiss.gitminer.controller;
 
 import aiss.gitminer.model.Comment;
+import aiss.gitminer.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +14,7 @@ import java.util.List;
 public class CommentController {
 
     @Autowired
-    CommentController repository;
+    CommentRepository repository;
 
     @GetMapping
     public List<Comment> findAll() {

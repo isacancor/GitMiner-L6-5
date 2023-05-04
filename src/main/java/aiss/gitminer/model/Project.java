@@ -79,6 +79,14 @@ public class Project {
         this.issues = issues;
     }
 
+    public Project(String id, String name, String webUrl, List<Commit> commits, List<Issue> issues) {
+        this.id = id;
+        this.name = name;
+        this.webUrl = webUrl;
+        this.commits = commits;
+        this.issues = issues;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

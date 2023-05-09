@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface CommitRepository extends JpaRepository<Commit,String> {
-    Page<Commit> findByName(String name, Pageable pageable);
+    Page<Commit> findByTitle(String name, Pageable pageable);
 }

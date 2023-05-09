@@ -8,6 +8,7 @@ import aiss.gitminer.model.User;
 import aiss.gitminer.repository.IssueRepository;
 import aiss.gitminer.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,10 +49,17 @@ public class IssueController {
             @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping
-    public List<Issue> findAll(@RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
-                               @RequestParam(required = false) String title,
-                               @RequestParam(required = false) String order) {
+    public List<Issue> findAll(@Parameter(description = "Number of pages to be returned")
+                                   @RequestParam(defaultValue = "0") int page,
+                               @Parameter(description = "Number of issues per page")
+                                    @RequestParam(defaultValue = "10") int size,
+                               @Parameter(description = "If it is present, only issues whose " +
+                                       "field \"title\" is equals to this param value")
+                                   @RequestParam(required = false) String title,
+                               @Parameter(description = "If it is present, the issues will be returned sorted by " +
+                                       "this field depending on whether the param starts with \"-\" " +
+                                       "(descending order) " + "or not (ascending orther)")
+                                   @RequestParam(required = false) String order) {
         Pageable paging;
         if (order!=null) {
             if (order.startsWith("-"))
@@ -85,7 +93,8 @@ public class IssueController {
             @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping("/{id}")
-    public Issue findOne(@PathVariable(value="id") String id) throws IssueNotFoundException {
+    public Issue findOne(@Parameter(description = "id of the issue to be returned") @PathVariable(value="id") String id)
+            throws IssueNotFoundException {
         Optional<Issue> issue = repository.findById(id);
 
         if(!issue.isPresent()){
@@ -109,7 +118,17 @@ public class IssueController {
             @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping("/{id}/comments")
-    public List<Comment> findCommentsByIssueId(@PathVariable(value="id") String id) throws IssueNotFoundException {
+    public List<Comment> findCommentsByIssueId(@Parameter(description = "id of the issue whose comments are to be returned")
+                                                   @PathVariable(value="id") String id,
+                                               @Parameter(description = "Number of pages to be returned")
+                                               @RequestParam(defaultValue = "0") int page,
+                                               @Parameter(description = "Number of comments per page")
+                                                   @RequestParam(defaultValue = "10") int size,
+                                               @Parameter(description = "If it is present, the comments will be returned sorted by " +
+                                                       "this field depending on whether the param starts with \"-\" " +
+                                                       "(descending order) " + "or not (ascending orther)")
+                                                   @RequestParam(required = false) String order)
+            throws IssueNotFoundException {
         Optional<Issue> issue = repository.findById(id);
 
         if(!issue.isPresent()){

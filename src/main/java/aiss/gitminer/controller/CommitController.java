@@ -4,6 +4,7 @@ import aiss.gitminer.exception.CommitNotFoundException;
 import aiss.gitminer.model.Commit;
 import aiss.gitminer.repository.CommitRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,10 +41,17 @@ public class CommitController {
             @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping
-    public List<Commit> findAll(@RequestParam(defaultValue = "0") int page,
-                                @RequestParam(defaultValue = "10") int size,
-                                @RequestParam(required = false) String title,
-                                @RequestParam(required = false) String order) {
+    public List<Commit> findAll(@Parameter(description = "Number of pages to be returned")
+                                    @RequestParam(defaultValue = "0") int page,
+                                @Parameter(description = "Number of commits per page")
+                                    @RequestParam(defaultValue = "10") int size,
+                                @Parameter(description = "If it is present, only commits whose " +
+                                        "field \"title\" is equals to this param value")
+                                    @RequestParam(required = false) String title,
+                                @Parameter(description = "If it is present, the commits will be returned sorted by " +
+                                        "this field depending on whether the param starts with \"-\" " +
+                                        "(descending order) " + "or not (ascending orther)")
+                                    @RequestParam(required = false) String order) {
         Pageable paging;
         if (order!=null) {
             if (order.startsWith("-"))
@@ -57,7 +65,7 @@ public class CommitController {
         if(title == null)
             pageCommits = repository.findAll(paging);
         else
-            pageCommits = repository.findByName(title, paging);
+            pageCommits = repository.findByTitle(title, paging);
 
         return pageCommits.getContent();
     }
@@ -76,7 +84,8 @@ public class CommitController {
             @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping("/{id}")
-    public Commit findOne(@PathVariable(value="id") String id) throws CommitNotFoundException {
+    public Commit findOne(@Parameter(description = "id of the commit to be returned") @PathVariable(value="id") String id)
+            throws CommitNotFoundException {
         Optional<Commit> commit = repository.findById(id);
 
         if(!commit.isPresent()){

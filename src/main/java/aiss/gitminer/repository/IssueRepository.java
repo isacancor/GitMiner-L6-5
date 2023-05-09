@@ -11,8 +11,5 @@ import java.util.List;
 
 @Repository
 public interface IssueRepository extends JpaRepository<Issue,String> {
-    List<Issue> findByState(String state);
-    List<Issue> findByUser(User user);
-
     Page<Issue> findByTitle(String title, Pageable paging);
 }

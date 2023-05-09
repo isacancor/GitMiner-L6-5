@@ -4,6 +4,7 @@ import aiss.gitminer.exception.CommentNotFoundException;
 import aiss.gitminer.model.Comment;
 import aiss.gitminer.repository.CommentRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,8 +28,6 @@ public class CommentController {
     @Autowired
     CommentRepository repository;
 
-
-
     // GET http://localhost:8080/api/comments
     @Operation(
             summary = "Get all comments",
@@ -41,9 +40,14 @@ public class CommentController {
             @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping
-    public List<Comment> findAll(@RequestParam(defaultValue = "0") int page,
-                                 @RequestParam(defaultValue = "10") int size,
-                                 @RequestParam(required = false) String order) {
+    public List<Comment> findAll(@Parameter(description = "Number of pages to be returned")
+                                     @RequestParam(defaultValue = "0") int page,
+                                 @Parameter(description = "Number of comments per page")
+                                    @RequestParam(defaultValue = "10") int size,
+                                 @Parameter(description = "If it is present, the comments will be returned sorted by " +
+                                         "this field depending on whether the param starts with \"-\" " +
+                                         "(descending order) " + "or not (ascending orther)")
+                                     @RequestParam(required = false) String order) {
         Pageable paging;
         if (order!=null) {
             if (order.startsWith("-"))
@@ -73,7 +77,8 @@ public class CommentController {
             @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping("/{id}")
-    public Comment findOne(@PathVariable(value="id") String id) throws CommentNotFoundException {
+    public Comment findOne(@Parameter(description = "id of the comment to be returned") @PathVariable(value="id") String id)
+            throws CommentNotFoundException {
         Optional<Comment> comment = repository.findById(id);
 
         if(!comment.isPresent()){

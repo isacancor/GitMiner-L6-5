@@ -4,6 +4,7 @@ import aiss.gitminer.exception.ProjectNotFoundException;
 import aiss.gitminer.model.Project;
 import aiss.gitminer.repository.ProjectRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -43,10 +44,17 @@ public class ProjectController {
             @ApiResponse(responseCode = "404", description="Project not found", content = { @Content(schema = @Schema()) })
     })
     @GetMapping
-    public List<Project> findAll(@RequestParam(defaultValue = "0") int page,
-                                 @RequestParam(defaultValue = "10") int size,
-                                 @RequestParam(required = false) String name,
-                                 @RequestParam(required = false) String order) {
+    public List<Project> findAll(@Parameter(description = "Number of pages to be returned")
+                                     @RequestParam(defaultValue = "0") int page,
+                                 @Parameter(description = "Number of projects per page")
+                                    @RequestParam(defaultValue = "10") int size,
+                                 @Parameter(description = "If it is present, only projects whose " +
+                                         "field \"name\" is equals to this param value")
+                                     @RequestParam(required = false) String name,
+                                 @Parameter(description = "If it is present, the projects will be returned sorted by " +
+                                         "this field depending on whether the param starts with \"-\" " +
+                                         "(descending order) " + "or not (ascending orther)")
+                                     @RequestParam(required = false) String order) {
         Pageable paging;
         if (order!=null) {
             if (order.startsWith("-"))
@@ -79,7 +87,8 @@ public class ProjectController {
             @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping("/{id}")
-    public Project findOne(@PathVariable String id) throws ProjectNotFoundException {
+    public Project findOne(@Parameter(description = "id of the project to be returned") @PathVariable String id)
+            throws ProjectNotFoundException {
         Optional<Project> project = repository.findById(id);
         if(!project.isPresent()){
             throw new ProjectNotFoundException();

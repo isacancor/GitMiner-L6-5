@@ -3,6 +3,7 @@ package aiss.gitminer.controller;
 import aiss.gitminer.exception.IssueNotFoundException;
 import aiss.gitminer.model.Comment;
 import aiss.gitminer.model.Issue;
+import aiss.gitminer.model.Project;
 import aiss.gitminer.model.User;
 import aiss.gitminer.repository.IssueRepository;
 import aiss.gitminer.repository.UserRepository;
@@ -11,12 +12,18 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
+@Tag(name = "Issue", description = "Issue management API")
 @RestController
 @RequestMapping("/gitminer/issues")
 public class IssueController {
@@ -41,21 +48,26 @@ public class IssueController {
             @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping
-    public List<Issue> findAll(
-            @RequestParam Optional<String> authorId,
-            @RequestParam Optional<String> state) {
-        if(authorId.isPresent()) {
-            Optional<User> user = usRepos.findById(authorId.get());
-            if (user.isPresent()) {
-                return repository.findByUser(user.get());
-            } else {
-                System.out.println("user not found");
-                return null;
-            }
-        } else if (state.isPresent()){
-            return repository.findByState(state.get());
+    public List<Issue> findAll(@RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "10") int size,
+                               @RequestParam(required = false) String title,
+                               @RequestParam(required = false) String order) {
+        Pageable paging;
+        if (order!=null) {
+            if (order.startsWith("-"))
+                paging = PageRequest.of(page, size, Sort.by(order.substring(1)).descending());
+            else
+                paging = PageRequest.of(page, size, Sort.by(order).ascending());
+        } else {
+            paging = PageRequest.of(page, size);
         }
-        return repository.findAll();
+        Page<Issue> pageProjects;
+        if(title == null)
+            pageProjects = repository.findAll(paging);
+        else
+            pageProjects = repository.findByTitle(title, paging);
+
+        return pageProjects.getContent();
     }
 
 

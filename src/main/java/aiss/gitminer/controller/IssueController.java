@@ -5,6 +5,7 @@ import aiss.gitminer.model.Comment;
 import aiss.gitminer.model.Issue;
 import aiss.gitminer.model.Project;
 import aiss.gitminer.model.User;
+import aiss.gitminer.repository.CommentRepository;
 import aiss.gitminer.repository.IssueRepository;
 import aiss.gitminer.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +34,7 @@ public class IssueController {
     IssueRepository repository;
 
     @Autowired
-    UserRepository usRepos;
+    CommentRepository commentRepository;
 
 
 
@@ -43,10 +44,10 @@ public class IssueController {
             description = "Get all issues",
             tags = { "issues", "get" })
     @ApiResponses({
-            @ApiResponse(responseCode = "200",
+            @ApiResponse(responseCode = "200", description = "List of issues received",
                     content = { @Content(schema = @Schema(implementation = Issue.class), mediaType= "application/json") }
             ),
-            @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
+            @ApiResponse (responseCode = "400", description = "Bad request", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping
     public List<Issue> findAll(@Parameter(description = "Number of pages to be returned")
@@ -83,14 +84,15 @@ public class IssueController {
 
     // GET http://localhost:8080/api/issues/{id}
     @Operation(
-            summary = "Get one issues",
+            summary = "Get one issue",
             description = "Get an issue that have the id given",
             tags = { "issues", "get" })
     @ApiResponses({
-            @ApiResponse(responseCode = "200",
+            @ApiResponse(responseCode = "200", description = "Issue received",
                     content = { @Content(schema = @Schema(implementation = Issue.class), mediaType= "application/json") }
             ),
-            @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
+            @ApiResponse (responseCode = "400", description = "Bad request", content = { @Content (schema = @Schema ()) }),
+            @ApiResponse(responseCode = "404", description = "Issue not found", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/{id}")
     public Issue findOne(@Parameter(description = "id of the issue to be returned") @PathVariable(value="id") String id)
@@ -105,7 +107,7 @@ public class IssueController {
     }
 
 
-
+/*
     // GET http://localhost:8080/api/issues/{id}/comments
     @Operation(
             summary = "Get comments by issue ID",
@@ -115,7 +117,8 @@ public class IssueController {
             @ApiResponse(responseCode = "200",
                     content = { @Content(schema = @Schema(implementation = Issue.class), mediaType= "application/json") }
             ),
-            @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
+            @ApiResponse (responseCode = "400", description = "Bad request", content = { @Content (schema = @Schema ()) }),
+            @ApiResponse(responseCode = "404", description = "Issue not found", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/{id}/comments")
     public List<Comment> findCommentsByIssueId(@Parameter(description = "id of the issue whose comments are to be returned")
@@ -129,12 +132,26 @@ public class IssueController {
                                                        "(descending order) " + "or not (ascending orther)")
                                                    @RequestParam(required = false) String order)
             throws IssueNotFoundException {
-        Optional<Issue> issue = repository.findById(id);
-
-        if(!issue.isPresent()){
+        if (!repository.existsById(id)) {
             throw new IssueNotFoundException();
         }
 
-        return issue.get().getComments();
+        Pageable paging;
+        if (order!=null) {
+            if (order.startsWith("-"))
+                paging = PageRequest.of(page, size, Sort.by(order.substring(1)).descending());
+            else
+                paging = PageRequest.of(page, size, Sort.by(order).ascending());
+        } else {
+            paging = PageRequest.of(page, size);
+        }
+
+        Page<Comment> pageComments;
+        pageComments = commentRepository.findByIssueId(id, paging);
+
+        return pageComments.getContent();
     }
+
+ */
+
 }

@@ -34,8 +34,7 @@ public class CommentController {
             description = "Get all comments",
             tags = { "comments", "get" })
     @ApiResponses({
-            @ApiResponse(responseCode = "200",
-                    content = { @Content(schema = @Schema(implementation = Comment.class), mediaType= "application/json") }
+            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = Comment.class), mediaType= "application/json") }
             ),
             @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
     })

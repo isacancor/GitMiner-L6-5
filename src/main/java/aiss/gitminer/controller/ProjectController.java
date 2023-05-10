@@ -31,25 +31,20 @@ public class ProjectController {
     ProjectRepository repository;
 
 
-
     // GET http://localhost:8080/api/projects
     @Operation(
             summary = "Get all project",
             description = "Get  all project",
             tags = { "projects", "get" })
     @ApiResponses({
-            @ApiResponse(responseCode = "200",
-                    content = { @Content(schema = @Schema(implementation =Project.class), mediaType= "application/json") }
-            ),
-            @ApiResponse(responseCode = "404", description="Project not found", content = { @Content(schema = @Schema()) })
+            @ApiResponse(responseCode = "200", description = "List of projects received",
+                    content = { @Content(schema = @Schema(implementation =Project.class), mediaType= "application/json") }),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping
-    public List<Project> findAll(@Parameter(description = "Number of pages to be returned")
-                                     @RequestParam(defaultValue = "0") int page,
-                                 @Parameter(description = "Number of projects per page")
-                                    @RequestParam(defaultValue = "10") int size,
-                                 @Parameter(description = "If it is present, only projects whose " +
-                                         "field \"name\" is equals to this param value")
+    public List<Project> findAll(@Parameter(description = "Number of pages to be returned") @RequestParam(defaultValue = "0") int page,
+                                 @Parameter(description = "Number of projects per page") @RequestParam(defaultValue = "10") int size,
+                                 @Parameter(description = "If it is present, only projects whose field \"name\" is equals to this param value")
                                      @RequestParam(required = false) String name,
                                  @Parameter(description = "If it is present, the projects will be returned sorted by " +
                                          "this field depending on whether the param starts with \"-\" " +
@@ -81,10 +76,8 @@ public class ProjectController {
             description = "Get a project that have the id given",
             tags = { "projects", "get" })
     @ApiResponses({
-            @ApiResponse(responseCode = "200",
-                    content = { @Content(schema = @Schema(implementation =Project.class), mediaType= "application/json") }
-            ),
-            @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
+            @ApiResponse(responseCode = "200", description = "Project received", content = { @Content(schema = @Schema(implementation =Project.class), mediaType= "application/json") }),
+            @ApiResponse (responseCode = "404", description = "Project not found", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping("/{id}")
     public Project findOne(@Parameter(description = "id of the project to be returned") @PathVariable String id)
@@ -104,10 +97,8 @@ public class ProjectController {
             description = "Create a project",
             tags = { "projects", "post" })
     @ApiResponses({
-            @ApiResponse(responseCode = "201",
-                    content = { @Content(schema = @Schema(implementation =Project.class), mediaType= "application/json")}
-            ),
-            @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
+            @ApiResponse(responseCode = "201", description = "Project created", content = { @Content(schema = @Schema(implementation =Project.class), mediaType= "application/json")}),
+            @ApiResponse (responseCode = "400", description = "Bad request", content = { @Content (schema = @Schema ()) })
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -120,6 +111,57 @@ public class ProjectController {
                 project.getIssues()
         ));
         return _project;
+    }
+
+
+    @Operation(
+            summary = "Update one project",
+            description = "Update a project that have the id given",
+            tags = { "projects", "put" }
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Project updated", content = { @Content(schema = @Schema(implementation =Project.class), mediaType= "application/json")}),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "404", description = "Project not found", content = { @Content(schema = @Schema()) })
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/{id}")
+    public void updateProject(@Valid @RequestBody Project updatedProject,
+                              @Parameter(description = "id of the project to be updated") @PathVariable String id)
+            throws ProjectNotFoundException{
+        Optional<Project> projectData = repository.findById(id);
+
+        if (!projectData.isPresent()) {
+            throw new ProjectNotFoundException();
+        }
+
+        Project _project = projectData.get();
+        _project.setName(updatedProject.getName());
+        _project.setWebUrl(updatedProject.getWebUrl());
+        _project.setCommits(updatedProject.getCommits());
+        _project.setIssues(updatedProject.getIssues());
+        repository.save(_project);
+    }
+
+    @Operation(
+            summary = "Delete one project",
+            description = "Delete a project that have the id given",
+            tags = { "projects", "delete" }
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Project updated", content = { @Content(schema = @Schema(implementation =Project.class), mediaType= "application/json")}),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "404", description = "Project not found", content = { @Content(schema = @Schema()) })
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void delete (@Parameter(description = "id of the project to be deleted") @PathVariable String id)
+            throws ProjectNotFoundException {
+        if(repository.existsById(id)) {
+            repository.deleteById(id);
+        } else {
+            throw new ProjectNotFoundException();
+        }
     }
 
 }

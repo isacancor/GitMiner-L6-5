@@ -35,18 +35,15 @@ public class CommitController {
             description = "Get all commits",
             tags = { "commits", "get"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200",
+            @ApiResponse(responseCode = "200", description = "List of commits received",
                     content = { @Content(schema = @Schema(implementation = Commit.class), mediaType= "application/json") }
             ),
-            @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
+            @ApiResponse (responseCode = "400", description = "Bad request", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping
-    public List<Commit> findAll(@Parameter(description = "Number of pages to be returned")
-                                    @RequestParam(defaultValue = "0") int page,
-                                @Parameter(description = "Number of commits per page")
-                                    @RequestParam(defaultValue = "10") int size,
-                                @Parameter(description = "If it is present, only commits whose " +
-                                        "field \"title\" is equals to this param value")
+    public List<Commit> findAll(@Parameter(description = "Number of pages to be returned") @RequestParam(defaultValue = "0") int page,
+                                @Parameter(description = "Number of commits per page") @RequestParam(defaultValue = "10") int size,
+                                @Parameter(description = "If it is present, only commits whose field \"title\" is equals to this param value")
                                     @RequestParam(required = false) String title,
                                 @Parameter(description = "If it is present, the commits will be returned sorted by " +
                                         "this field depending on whether the param starts with \"-\" " +
@@ -78,10 +75,11 @@ public class CommitController {
             description = "Get a commit that have the id given",
             tags = { "commit", "get"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200",
+            @ApiResponse(responseCode = "200", description = "Commit received",
                     content = { @Content(schema = @Schema(implementation = Commit.class), mediaType= "application/json") }
             ),
-            @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
+            @ApiResponse (responseCode = "400", description = "Bad request", content = { @Content (schema = @Schema ()) }),
+            @ApiResponse(responseCode = "404", description = "Commit not found", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/{id}")
     public Commit findOne(@Parameter(description = "id of the commit to be returned") @PathVariable(value="id") String id)

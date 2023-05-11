@@ -30,7 +30,6 @@ public class ProjectController {
     @Autowired
     ProjectRepository repository;
 
-
     // GET http://localhost:8080/api/projects
     @Operation(
             summary = "Get all project",
@@ -68,8 +67,6 @@ public class ProjectController {
         return pageProjects.getContent();
     }
 
-
-
     // GET http://localhost:8080/api/projects/{id}
     @Operation(
             summary = "Get one project",
@@ -88,8 +85,6 @@ public class ProjectController {
         }
         return project.get();
     }
-
-
 
     // POST http://localhost:8080/api/projects
     @Operation(
@@ -113,7 +108,7 @@ public class ProjectController {
         return _project;
     }
 
-
+    // PUT http://localhost:8080/api/projects/{id}
     @Operation(
             summary = "Update one project",
             description = "Update a project that have the id given",
@@ -143,6 +138,7 @@ public class ProjectController {
         repository.save(_project);
     }
 
+    // DELETE http://localhost:8080/api/projects/{id}
     @Operation(
             summary = "Delete one project",
             description = "Delete a project that have the id given",

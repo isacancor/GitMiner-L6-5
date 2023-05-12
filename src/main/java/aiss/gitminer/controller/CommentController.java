@@ -76,7 +76,7 @@ public class CommentController {
             @ApiResponse (responseCode = "400", content = { @Content (schema = @Schema ()) })
     })
     @GetMapping("/{id}")
-    public Comment findOne(@Parameter(description = "id of the comment to be returned") @PathVariable(value="id") String id)
+    public Comment findOne(@Parameter(description = "id of the comment to be returned") @PathVariable String id)
             throws CommentNotFoundException {
         Optional<Comment> comment = repository.findById(id);
 

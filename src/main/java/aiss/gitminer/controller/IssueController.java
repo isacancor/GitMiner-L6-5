@@ -85,7 +85,7 @@ public class IssueController {
     // GET http://localhost:8080/api/issues/{id}
     @Operation(
             summary = "Get one issue",
-            description = "Get an issue that have the id given",
+            description = "Get an issue that has the given id",
             tags = { "issues", "get" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Issue received",
@@ -95,7 +95,7 @@ public class IssueController {
             @ApiResponse(responseCode = "404", description = "Issue not found", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/{id}")
-    public Issue findOne(@Parameter(description = "id of the issue to be returned") @PathVariable(value="id") String id)
+    public Issue findOne(@Parameter(description = "id of the issue to be returned") @PathVariable String id)
             throws IssueNotFoundException {
         Optional<Issue> issue = repository.findById(id);
 
@@ -107,11 +107,11 @@ public class IssueController {
     }
 
 
-/*
+
     // GET http://localhost:8080/api/issues/{id}/comments
     @Operation(
             summary = "Get comments by issue ID",
-            description = "Get all the comments from the issue that have the id given",
+            description = "Get all the comments from the issue that has the given id",
             tags = { "issues", "get" , "comments"})
     @ApiResponses({
             @ApiResponse(responseCode = "200",
@@ -122,36 +122,18 @@ public class IssueController {
     })
     @GetMapping("/{id}/comments")
     public List<Comment> findCommentsByIssueId(@Parameter(description = "id of the issue whose comments are to be returned")
-                                                   @PathVariable(value="id") String id,
-                                               @Parameter(description = "Number of pages to be returned")
-                                               @RequestParam(defaultValue = "0") int page,
-                                               @Parameter(description = "Number of comments per page")
-                                                   @RequestParam(defaultValue = "10") int size,
-                                               @Parameter(description = "If it is present, the comments will be returned sorted by " +
-                                                       "this field depending on whether the param starts with \"-\" " +
-                                                       "(descending order) " + "or not (ascending orther)")
-                                                   @RequestParam(required = false) String order)
+                                                   @PathVariable String id)
             throws IssueNotFoundException {
-        if (!repository.existsById(id)) {
+
+        Optional<Issue> issue = repository.findById(id);
+
+        if(!issue.isPresent()){
             throw new IssueNotFoundException();
         }
 
-        Pageable paging;
-        if (order!=null) {
-            if (order.startsWith("-"))
-                paging = PageRequest.of(page, size, Sort.by(order.substring(1)).descending());
-            else
-                paging = PageRequest.of(page, size, Sort.by(order).ascending());
-        } else {
-            paging = PageRequest.of(page, size);
-        }
-
-        Page<Comment> pageComments;
-        pageComments = commentRepository.findByIssueId(id, paging);
-
-        return pageComments.getContent();
+        return issue.get().getComments();
     }
 
- */
+
 
 }

@@ -19,7 +19,7 @@ public class User {
     @JsonProperty("id")
     private String id;
     @JsonProperty("username")
-    @NotEmpty(message = "The username cannot be empty")
+    //@NotEmpty(message = "The username cannot be empty")
     private String username;
     @JsonProperty("name")
     private String name;

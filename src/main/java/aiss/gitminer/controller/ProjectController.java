@@ -43,7 +43,7 @@ public class ProjectController {
     @GetMapping
     public List<Project> findAll(@Parameter(description = "Number of pages to be returned") @RequestParam(defaultValue = "0") int page,
                                  @Parameter(description = "Number of projects per page") @RequestParam(defaultValue = "10") int size,
-                                 @Parameter(description = "If it is present, only projects whose field \"name\" is equals to this param value")
+                                 @Parameter(description = "If it is present, only projects whose field \"name\" are like this param value will be returned")
                                      @RequestParam(required = false) String name,
                                  @Parameter(description = "If it is present, the projects will be returned sorted by " +
                                          "this field depending on whether the param starts with \"-\" " +

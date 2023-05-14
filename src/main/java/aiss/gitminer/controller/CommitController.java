@@ -43,11 +43,11 @@ public class CommitController {
     @GetMapping
     public List<Commit> findAll(@Parameter(description = "Number of pages to be returned") @RequestParam(defaultValue = "0") int page,
                                 @Parameter(description = "Number of commits per page") @RequestParam(defaultValue = "10") int size,
-                                @Parameter(description = "If it is present, only commits whose field \"title\" is equals to this param value")
+                                @Parameter(description = "If it is present, only commits whose field \"title\" are like this param value will be returned")
                                     @RequestParam(required = false) String title,
-                                @Parameter(description = "If it is present, only commits whose field \"author_name\" is equals to this param value")
+                                @Parameter(description = "If it is present, only commits whose field \"author_name\" are like this param value will be returned")
                                     @RequestParam(required = false) String author_name,
-                                @Parameter(description = "If it is present, only commits whose field \"author_email\" is equals to this param value")
+                                @Parameter(description = "If it is present, only commits whose field \"author_email\" are like this param value will be returned")
                                     @RequestParam(required = false) String email,
                                 @Parameter(description = "If it is present, the commits will be returned sorted by " +
                                         "this field depending on whether the param starts with \"-\" " +

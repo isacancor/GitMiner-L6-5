@@ -55,16 +55,16 @@ public class IssueController {
                                @Parameter(description = "Number of issues per page")
                                     @RequestParam(defaultValue = "10") int size,
                                @Parameter(description = "If it is present, only issues whose " +
-                                       "field \"refId\" is equals to this param value")
+                                       "field \"refId\" are like this param value will be returned")
                                    @RequestParam(required = false) String refId,
                                @Parameter(description = "If it is present, only issues whose " +
-                                       "field \"title\" is equals to this param value")
+                                       "field \"title\" are like this param value will be returned")
                                    @RequestParam(required = false) String title,
                                @Parameter(description = "If it is present, only issues whose " +
-                                       "field \"title\" is equals to this param value")
+                                       "field \"title\" are like this param value will be returned")
                                    @RequestParam(required = false) String authorId,
                                @Parameter(description = "If it is present, only issues whose " +
-                                       "field \"title\" is equals to this param value")
+                                       "field \"title\" are like this param value will be returned")
                                    @RequestParam(required = false) String state,
                                @Parameter(description = "If it is present, the issues will be returned sorted by " +
                                        "this field depending on whether the param starts with \"-\" " +

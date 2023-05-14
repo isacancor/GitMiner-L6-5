@@ -45,7 +45,7 @@ public class CommentController {
                                  @Parameter(description = "Number of comments per page")
                                     @RequestParam(defaultValue = "10") int size,
                                  @Parameter(description = "If it is present, only comments whose " +
-                                         "field \"authorId\" is equals to this param value")
+                                         "field \"authorId\" are like this param value will be returned")
                                      @RequestParam(required = false) String authorId,
                                  @Parameter(description = "If it is present, the comments will be returned sorted by " +
                                          "this field depending on whether the param starts with \"-\" " +

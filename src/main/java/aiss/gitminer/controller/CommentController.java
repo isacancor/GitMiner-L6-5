@@ -2,6 +2,7 @@ package aiss.gitminer.controller;
 
 import aiss.gitminer.exception.CommentNotFoundException;
 import aiss.gitminer.model.Comment;
+import aiss.gitminer.model.Commit;
 import aiss.gitminer.repository.CommentRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,6 +44,9 @@ public class CommentController {
                                      @RequestParam(defaultValue = "0") int page,
                                  @Parameter(description = "Number of comments per page")
                                     @RequestParam(defaultValue = "10") int size,
+                                 @Parameter(description = "If it is present, only comments whose " +
+                                         "field \"authorId\" is equals to this param value")
+                                     @RequestParam(required = false) String authorId,
                                  @Parameter(description = "If it is present, the comments will be returned sorted by " +
                                          "this field depending on whether the param starts with \"-\" " +
                                          "(descending order) " + "or not (ascending orther)")
@@ -57,7 +61,10 @@ public class CommentController {
             paging = PageRequest.of(page, size);
         }
         Page<Comment> pageComments;
-        pageComments = repository.findAll(paging);
+        if(authorId != null)
+            pageComments = repository.findByAuthorId(authorId, paging);
+        else
+            pageComments = repository.findAll(paging);
         return pageComments.getContent();
     }
 

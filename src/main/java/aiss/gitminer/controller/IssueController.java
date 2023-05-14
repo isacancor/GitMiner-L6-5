@@ -107,7 +107,6 @@ public class IssueController {
     }
 
 
-
     // GET http://localhost:8080/api/issues/{id}/comments
     @Operation(
             summary = "Get comments by issue ID",
@@ -122,16 +121,15 @@ public class IssueController {
     })
     @GetMapping("/{id}/comments")
     public List<Comment> findCommentsByIssueId(@Parameter(description = "id of the issue whose comments are to be returned")
-                                                   @PathVariable(value="id") String id)
+                                                   @PathVariable String id)
             throws IssueNotFoundException {
+
         Optional<Issue> issue = repository.findById(id);
 
-        if(!issue.isPresent()) {
+        if(!issue.isPresent()){
             throw new IssueNotFoundException();
         }
 
         return issue.get().getComments();
     }
-
-
 }

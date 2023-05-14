@@ -82,7 +82,7 @@ public class CommitController {
             @ApiResponse(responseCode = "404", description = "Commit not found", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/{id}")
-    public Commit findOne(@Parameter(description = "id of the commit to be returned") @PathVariable(value="id") String id)
+    public Commit findOne(@Parameter(description = "id of the commit to be returned") @PathVariable String id)
             throws CommitNotFoundException {
         Optional<Commit> commit = repository.findById(id);
 

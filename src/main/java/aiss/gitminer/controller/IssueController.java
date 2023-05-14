@@ -41,7 +41,7 @@ public class IssueController {
     // GET http://localhost:8080/api/issues
     @Operation(
             summary = "Get all issues",
-            description = "Get all issues",
+            description = "Get all issues. Only one filter can be applied per request.",
             tags = { "issues", "get" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "List of issues received",
@@ -55,8 +55,17 @@ public class IssueController {
                                @Parameter(description = "Number of issues per page")
                                     @RequestParam(defaultValue = "10") int size,
                                @Parameter(description = "If it is present, only issues whose " +
+                                       "field \"refId\" is equals to this param value")
+                                   @RequestParam(required = false) String refId,
+                               @Parameter(description = "If it is present, only issues whose " +
                                        "field \"title\" is equals to this param value")
                                    @RequestParam(required = false) String title,
+                               @Parameter(description = "If it is present, only issues whose " +
+                                       "field \"title\" is equals to this param value")
+                                   @RequestParam(required = false) String authorId,
+                               @Parameter(description = "If it is present, only issues whose " +
+                                       "field \"title\" is equals to this param value")
+                                   @RequestParam(required = false) String state,
                                @Parameter(description = "If it is present, the issues will be returned sorted by " +
                                        "this field depending on whether the param starts with \"-\" " +
                                        "(descending order) " + "or not (ascending orther)")
@@ -70,13 +79,20 @@ public class IssueController {
         } else {
             paging = PageRequest.of(page, size);
         }
-        Page<Issue> pageProjects;
-        if(title == null)
-            pageProjects = repository.findAll(paging);
+        Page<Issue> pageIssues;
+        if(refId != null)
+            pageIssues = repository.findByRefId(refId, paging);
+        else if(title != null)
+            pageIssues = repository.findByTitleContaining(title, paging);
+        else if(authorId != null)
+            pageIssues = repository.findByAuthorId(authorId, paging);
+        else if(state != null)
+            pageIssues = repository.findByState(state, paging);
         else
-            pageProjects = repository.findByTitle(title, paging);
+            pageIssues = repository.findAll(paging);
 
-        return pageProjects.getContent();
+
+        return pageIssues.getContent();
     }
 
 

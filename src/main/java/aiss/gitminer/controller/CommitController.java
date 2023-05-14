@@ -32,7 +32,7 @@ public class CommitController {
     // GET http://localhost:8080/api/commits/
     @Operation(
             summary = "Get all commits",
-            description = "Get all commits",
+            description = "Get all commits. Only one filter can be applied per request.",
             tags = { "commits", "get"})
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "List of commits received",
@@ -45,6 +45,10 @@ public class CommitController {
                                 @Parameter(description = "Number of commits per page") @RequestParam(defaultValue = "10") int size,
                                 @Parameter(description = "If it is present, only commits whose field \"title\" is equals to this param value")
                                     @RequestParam(required = false) String title,
+                                @Parameter(description = "If it is present, only commits whose field \"author_name\" is equals to this param value")
+                                    @RequestParam(required = false) String author_name,
+                                @Parameter(description = "If it is present, only commits whose field \"author_email\" is equals to this param value")
+                                    @RequestParam(required = false) String email,
                                 @Parameter(description = "If it is present, the commits will be returned sorted by " +
                                         "this field depending on whether the param starts with \"-\" " +
                                         "(descending order) " + "or not (ascending orther)")
@@ -59,11 +63,14 @@ public class CommitController {
             paging = PageRequest.of(page, size);
         }
         Page<Commit> pageCommits;
-        if(title == null)
-            pageCommits = repository.findAll(paging);
+        if(title != null)
+            pageCommits = repository.findByTitleContaining(title, paging);
+        else if(author_name != null)
+            pageCommits = repository.findByAuthorName(author_name ,paging);
+        else if(email != null)
+            pageCommits = repository.findByAuthorEmail(email, paging);
         else
-            pageCommits = repository.findByTitle(title, paging);
-
+            pageCommits = repository.findAll(paging);
         return pageCommits.getContent();
     }
 

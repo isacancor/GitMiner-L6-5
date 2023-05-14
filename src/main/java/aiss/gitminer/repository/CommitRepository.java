@@ -10,5 +10,9 @@ import java.util.List;
 
 @Repository
 public interface CommitRepository extends JpaRepository<Commit,String> {
-    Page<Commit> findByTitle(String name, Pageable pageable);
+    Page<Commit> findByTitleContaining(String name, Pageable pageable);
+
+    Page<Commit> findByAuthorName(String name, Pageable pageable);
+
+    Page<Commit> findByAuthorEmail(String name, Pageable pageable);
 }

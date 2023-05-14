@@ -33,7 +33,7 @@ public class ProjectController {
     // GET http://localhost:8080/api/projects
     @Operation(
             summary = "Get all project",
-            description = "Get  all project",
+            description = "Get  all project. Only one filter can be applied per request.",
             tags = { "projects", "get" })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "List of projects received",
@@ -62,7 +62,7 @@ public class ProjectController {
         if(name == null)
             pageProjects = repository.findAll(paging);
         else
-            pageProjects = repository.findByName(name, paging);
+            pageProjects = repository.findByNameContaining(name, paging);
 
         return pageProjects.getContent();
     }

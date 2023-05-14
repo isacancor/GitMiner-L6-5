@@ -107,7 +107,7 @@ public class IssueController {
     }
 
 
-/*
+
     // GET http://localhost:8080/api/issues/{id}/comments
     @Operation(
             summary = "Get comments by issue ID",
@@ -122,36 +122,16 @@ public class IssueController {
     })
     @GetMapping("/{id}/comments")
     public List<Comment> findCommentsByIssueId(@Parameter(description = "id of the issue whose comments are to be returned")
-                                                   @PathVariable(value="id") String id,
-                                               @Parameter(description = "Number of pages to be returned")
-                                               @RequestParam(defaultValue = "0") int page,
-                                               @Parameter(description = "Number of comments per page")
-                                                   @RequestParam(defaultValue = "10") int size,
-                                               @Parameter(description = "If it is present, the comments will be returned sorted by " +
-                                                       "this field depending on whether the param starts with \"-\" " +
-                                                       "(descending order) " + "or not (ascending orther)")
-                                                   @RequestParam(required = false) String order)
+                                                   @PathVariable(value="id") String id)
             throws IssueNotFoundException {
-        if (!repository.existsById(id)) {
+        Optional<Issue> issue = repository.findById(id);
+
+        if(!issue.isPresent()) {
             throw new IssueNotFoundException();
         }
 
-        Pageable paging;
-        if (order!=null) {
-            if (order.startsWith("-"))
-                paging = PageRequest.of(page, size, Sort.by(order.substring(1)).descending());
-            else
-                paging = PageRequest.of(page, size, Sort.by(order).ascending());
-        } else {
-            paging = PageRequest.of(page, size);
-        }
-
-        Page<Comment> pageComments;
-        pageComments = commentRepository.findByIssueId(id, paging);
-
-        return pageComments.getContent();
+        return issue.get().getComments();
     }
 
- */
 
 }
